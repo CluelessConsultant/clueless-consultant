@@ -332,7 +332,11 @@ if st.session_state.result:
     ratio_label = ratio.replace("_", " ").title()
 
     st.markdown(
-        f'<span class="ratio-badge {ratio_class}">{ratio_label}</span>',
+        f'<span class="ratio-badge {ratio_class}">{ratio_label}</span>'
+        f'<span style="font-size:0.7rem;color:#9ca3af;margin-left:0.75rem;">'
+        f'Social Vitamins framework &nbsp;|&nbsp; Jazz Rasool &nbsp;|&nbsp; '
+        f'Support &nbsp;· &nbsp;Challenge &nbsp;·&nbsp; Reflection'
+        f'</span>',
         unsafe_allow_html=True
     )
 

@@ -76,6 +76,21 @@ SCENARIOS = [
             "a way they were not before. My Head of Engineering says everything is fine. "
             "My gut says it is not. I need to know what is actually going on before it gets worse."
         )
+    },
+    {
+        "id": "innovation",
+        "title": "The dead innovation lab",
+        "context": "4,000-person Austrian manufacturer, Chief Innovation Officer speaking",
+        "text": (
+            "Eighteen months ago we hired a consulting firm to help us build an innovation culture. "
+            "We ran design thinking workshops, we set up an innovation lab with dedicated space and "
+            "budget, we sent our top 20 leaders through an innovation leadership programme. "
+            "Today the lab is empty. The workshop outputs are in a shared drive no one opens. "
+            "The Head of Innovation we hired resigned last month. Leadership is still saying the "
+            "right things in town halls but nothing is changing on the ground. "
+            "The board is asking why we spent 1.2 million euros and have nothing to show for it. "
+            "I need to understand what actually went wrong before I go back to them."
+        )
     }
 ]
 
