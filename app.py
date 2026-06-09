@@ -7,6 +7,7 @@ Run with: python -m streamlit run app.py
 import streamlit as st
 import anthropic
 import json
+import re
 from datetime import datetime
 from coach import SYSTEM_PROMPT, SCENARIOS, PROBLEM_TYPES
 
@@ -298,12 +299,10 @@ if submit and valid:
 
         stream_box.empty()
 
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-            raw = raw.strip()
-
+        # Robustly extract JSON -- find the outermost { } block
+        match = re.search(r'\{.*\}', raw, re.DOTALL)
+        if match:
+            raw = match.group()
         data = json.loads(raw)
         st.session_state.result = data
         st.session_state.final_message = final_msg
