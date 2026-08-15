@@ -9,7 +9,68 @@ import anthropic
 import json
 import re
 from datetime import datetime
-from coach import SYSTEM_PROMPT, SCENARIOS, PROBLEM_TYPES
+from coach import build_system_prompt, SCENARIOS, PROBLEM_TYPES, PROBLEM_TYPE_LABELS
+
+UI_TEXT = {
+    "en": {
+        "hero_tag": "AI Coach",
+        "hero_title": "Clueless Consultant",
+        "hero_subtitle": "You do the thinking. Claude tells you where you went wrong.",
+        "scenario_label": "Client situation",
+        "classification_label": "Your problem classification",
+        "hypothesis_label": "Your leading hypothesis -- what do you think is actually going on?",
+        "hypothesis_placeholder": "State your hypothesis in 1-2 sentences. Be specific about cause, not symptom.",
+        "question_label": "Your first diagnostic question -- what would you ask the client right now?",
+        "question_placeholder": "The single most important question you would ask before anything else.",
+        "submit_button": "Get coached",
+        "next_button": "New scenario",
+        "framework_note": (
+            "Social Vitamins framework &nbsp;|&nbsp; Jazz Rasool &nbsp;|&nbsp; "
+            "Support &nbsp;· &nbsp;Challenge &nbsp;·&nbsp; Reflection"
+        ),
+        "challenge_label": "Challenge",
+        "support_label": "Support",
+        "reflection_label": "Reflect on this",
+        "ratio_labels": {
+            "heavy_challenge": "Heavy Challenge",
+            "balanced": "Balanced",
+            "heavy_reflection": "Heavy Reflection",
+        },
+        "tokens_in": "tokens in",
+        "tokens_out": "out",
+        "json_error": "Claude returned unexpected output. Try again.",
+        "generic_error": "Something went wrong:",
+    },
+    "de": {
+        "hero_tag": "KI-Coach",
+        "hero_title": "Clueless Consultant",
+        "hero_subtitle": "Du denkst. Claude sagt dir, wo du falsch liegst.",
+        "scenario_label": "Kundensituation",
+        "classification_label": "Deine Problemklassifikation",
+        "hypothesis_label": "Deine Leithypothese -- was, glaubst du, steckt wirklich dahinter?",
+        "hypothesis_placeholder": "Formuliere deine Hypothese in 1-2 Sätzen. Konkret zur Ursache, nicht zum Symptom.",
+        "question_label": "Deine erste diagnostische Frage -- was würdest du den Kunden jetzt sofort fragen?",
+        "question_placeholder": "Die eine wichtigste Frage, die du vor allem anderen stellen würdest.",
+        "submit_button": "Coaching erhalten",
+        "next_button": "Neues Szenario",
+        "framework_note": (
+            "Social-Vitamins-Framework &nbsp;|&nbsp; Jazz Rasool &nbsp;|&nbsp; "
+            "Support &nbsp;· &nbsp;Challenge &nbsp;·&nbsp; Reflexion"
+        ),
+        "challenge_label": "Challenge",
+        "support_label": "Support",
+        "reflection_label": "Zum Nachdenken",
+        "ratio_labels": {
+            "heavy_challenge": "Starker Challenge",
+            "balanced": "Ausgewogen",
+            "heavy_reflection": "Starke Reflexion",
+        },
+        "tokens_in": "Tokens rein",
+        "tokens_out": "raus",
+        "json_error": "Claude hat unerwarteten Output geliefert. Nochmal versuchen.",
+        "generic_error": "Etwas ist schiefgelaufen:",
+    },
+}
 
 # ── Page config ───────────────────────────────────────────────
 st.set_page_config(
@@ -199,14 +260,28 @@ if "result" not in st.session_state:
     st.session_state.result = None
 if "final_message" not in st.session_state:
     st.session_state.final_message = None
+if "language" not in st.session_state:
+    st.session_state.language = "en"
+
+# ── Language toggle ──────────────────────────────────────────
+st.radio(
+    "Language",
+    options=["en", "de"],
+    format_func=lambda code: "English" if code == "en" else "Deutsch",
+    horizontal=True,
+    key="language",
+    label_visibility="collapsed",
+)
+lang = st.session_state.language
+ui = UI_TEXT[lang]
 
 # ── Hero ──────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(f"""
 <div class="hero">
-    <div class="hero-tag">AI Coach</div>
-    <div class="hero-title">Clueless Consultant</div>
+    <div class="hero-tag">{ui['hero_tag']}</div>
+    <div class="hero-title">{ui['hero_title']}</div>
     <div class="hero-subtitle">
-        You do the thinking. Claude tells you where you went wrong.
+        {ui['hero_subtitle']}
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -216,31 +291,32 @@ scenario = SCENARIOS[st.session_state.scenario_index]
 
 st.markdown(f"""
 <div class="scenario-card">
-    <div class="scenario-label">Client situation &nbsp;|&nbsp; {scenario['context']}</div>
-    <div class="scenario-text">{scenario['text']}</div>
+    <div class="scenario-label">{ui['scenario_label']} &nbsp;|&nbsp; {scenario['context'][lang]}</div>
+    <div class="scenario-text">{scenario['text'][lang]}</div>
 </div>
 """, unsafe_allow_html=True)
 
 # ── Inputs ────────────────────────────────────────────────────
-st.markdown('<div class="input-label">Your problem classification</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="input-label">{ui["classification_label"]}</div>', unsafe_allow_html=True)
 classification = st.selectbox(
     "classification",
     PROBLEM_TYPES,
+    format_func=lambda key: PROBLEM_TYPE_LABELS[lang][key],
     label_visibility="collapsed"
 )
 
-st.markdown('<div class="input-label">Your leading hypothesis -- what do you think is actually going on?</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="input-label">{ui["hypothesis_label"]}</div>', unsafe_allow_html=True)
 hypothesis = st.text_area(
     "hypothesis",
-    placeholder="State your hypothesis in 1-2 sentences. Be specific about cause, not symptom.",
+    placeholder=ui["hypothesis_placeholder"],
     height=90,
     label_visibility="collapsed"
 )
 
-st.markdown('<div class="input-label">Your first diagnostic question -- what would you ask the client right now?</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="input-label">{ui["question_label"]}</div>', unsafe_allow_html=True)
 first_question = st.text_area(
     "first_question",
-    placeholder="The single most important question you would ask before anything else.",
+    placeholder=ui["question_placeholder"],
     height=75,
     label_visibility="collapsed"
 )
@@ -249,26 +325,26 @@ first_question = st.text_area(
 col_submit, col_next, _ = st.columns([1.2, 1.2, 2])
 
 valid = (
-    classification != "Select a classification..." and
+    classification != "select" and
     bool(hypothesis.strip()) and
     bool(first_question.strip())
 )
 
-submit = col_submit.button("Get coached", type="primary", disabled=not valid)
+submit = col_submit.button(ui["submit_button"], type="primary", disabled=not valid)
 
 def next_scenario():
     st.session_state.scenario_index = (st.session_state.scenario_index + 1) % len(SCENARIOS)
     st.session_state.result = None
     st.session_state.final_message = None
 
-col_next.button("New scenario", on_click=next_scenario)
+col_next.button(ui["next_button"], on_click=next_scenario)
 
 # ── Coaching ──────────────────────────────────────────────────
 if submit and valid:
     user_response = (
-        f"Scenario: {scenario['text']}\n\n"
+        f"Scenario: {scenario['text'][lang]}\n\n"
         f"The junior consultant responded:\n"
-        f"- Problem classification: {classification}\n"
+        f"- Problem classification: {PROBLEM_TYPE_LABELS['en'][classification]}\n"
         f"- Leading hypothesis: {hypothesis.strip()}\n"
         f"- First diagnostic question: {first_question.strip()}"
     )
@@ -283,11 +359,11 @@ if submit and valid:
         with client.messages.stream(
             model="claude-sonnet-4-5",
             max_tokens=1024,
-            system=SYSTEM_PROMPT,
+            system=build_system_prompt(lang),
             messages=[{"role": "user", "content": user_response}]
         ) as stream:
-            for text in stream.text_stream:
-                raw += text
+            for chunk in stream.text_stream:
+                raw += chunk
                 stream_box.markdown(
                     f'<div style="font-family:monospace;font-size:0.75rem;color:#6b7280;'
                     f'background:#f9fafb;padding:1rem 1.25rem;border-radius:8px;'
@@ -308,10 +384,10 @@ if submit and valid:
         st.session_state.final_message = final_msg
 
     except json.JSONDecodeError as e:
-        st.error(f"Claude returned unexpected output. Try again. ({e})")
+        st.error(f"{ui['json_error']} ({e})")
         st.stop()
     except Exception as e:
-        st.error(f"Something went wrong: {e}")
+        st.error(f"{ui['generic_error']} {e}")
         st.stop()
 
 # ── Display result ────────────────────────────────────────────
@@ -328,34 +404,33 @@ if st.session_state.result:
         "heavy_reflection": "ratio-heavy-reflection"
     }
     ratio_class = ratio_class_map.get(ratio, "ratio-balanced")
-    ratio_label = ratio.replace("_", " ").title()
+    ratio_label = ui["ratio_labels"].get(ratio, ui["ratio_labels"]["balanced"])
 
     st.markdown(
         f'<span class="ratio-badge {ratio_class}">{ratio_label}</span>'
         f'<span style="font-size:0.7rem;color:#9ca3af;margin-left:0.75rem;">'
-        f'Social Vitamins framework &nbsp;|&nbsp; Jazz Rasool &nbsp;|&nbsp; '
-        f'Support &nbsp;· &nbsp;Challenge &nbsp;·&nbsp; Reflection'
+        f'{ui["framework_note"]}'
         f'</span>',
         unsafe_allow_html=True
     )
 
     st.markdown(f"""
     <div class="vitamin-challenge">
-        <div class="vitamin-challenge-label">Challenge</div>
+        <div class="vitamin-challenge-label">{ui['challenge_label']}</div>
         <div class="vitamin-challenge-text">{data['challenge']}</div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="vitamin-support">
-        <div class="vitamin-support-label">Support</div>
+        <div class="vitamin-support-label">{ui['support_label']}</div>
         <div class="vitamin-support-text">{data['support']}</div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="vitamin-reflection">
-        <div class="vitamin-reflection-label">Reflect on this</div>
+        <div class="vitamin-reflection-label">{ui['reflection_label']}</div>
         <div class="vitamin-reflection-text">{data['reflection_question']}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -363,8 +438,8 @@ if st.session_state.result:
     if final_msg:
         st.markdown(
             f'<div class="token-info">'
-            f'{final_msg.usage.input_tokens} tokens in &nbsp;·&nbsp; '
-            f'{final_msg.usage.output_tokens} out &nbsp;·&nbsp; '
+            f'{final_msg.usage.input_tokens} {ui["tokens_in"]} &nbsp;·&nbsp; '
+            f'{final_msg.usage.output_tokens} {ui["tokens_out"]} &nbsp;·&nbsp; '
             f'{datetime.now().strftime("%d %b %Y, %H:%M")}'
             f'</div>',
             unsafe_allow_html=True
