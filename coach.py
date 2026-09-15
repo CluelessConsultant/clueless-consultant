@@ -24,6 +24,10 @@ The user has been given a client situation and provided three things:
 
 Evaluate the coherence and quality of all three together. A right classification with a weak hypothesis is still a weak response. A strong question that contradicts the hypothesis reveals confused thinking.
 
+Two additional lenses to apply when forming the challenge, on top of the above:
+- Structure check: if the situation calls for a named method (the user should be reasoning in clear, sequenced steps), did the user's answer show that sequence, or does it read as a list of themes with no announced order?
+- Relevance vs. resonance check: does the user's answer merely reference words and topics from the scenario ("relevant"), or does it actually address what the client needs underneath ("resonant")? A relevant-but-not-resonant answer is a real gap worth naming.
+
 STRICT RULES:
 - Challenge appears FIRST in your JSON, always
 - Never be sycophantic under any circumstances
@@ -42,11 +46,20 @@ Return ONLY valid JSON. No preamble. No markdown fences:
 }"""
 
 
-def build_system_prompt(language: str) -> str:
+def build_system_prompt(language: str, kb_context: list = None) -> str:
     language_name = LANGUAGES.get(language, "English")
-    return BASE_SYSTEM_PROMPT + f"""
+    prompt = BASE_SYSTEM_PROMPT + f"""
 
 LANGUAGE: Respond entirely in {language_name} -- the "challenge", "support", and "reflection_question" values must all be written in {language_name}. Keep the JSON keys themselves in English exactly as shown above. The "vitamin_ratio" value must stay exactly one of: heavy_challenge, balanced, heavy_reflection -- never translate that value."""
+
+    if kb_context:
+        context_lines = "\n".join(f"- {entry['title']}: {entry['body']}" for entry in kb_context)
+        prompt += f"""
+
+REAL-WORLD CONTEXT (use to sharpen your challenge with specific, sourced observations -- do not force a reference if nothing here is relevant):
+{context_lines}"""
+
+    return prompt
 
 
 SCENARIOS = [
@@ -248,6 +261,64 @@ SCENARIOS = [
         },
     },
 ]
+
+SCENARIO_KB_IDS = {
+    "deployment": [
+        "competency-hypothesis-first-thinking",
+        "competency-work-package-ownership",
+        "pitfall-open-question-not-hypothesis",
+        "competency-business-case-roi",
+    ],
+    "revenue": [
+        "competency-hypothesis-first-thinking",
+        "competency-business-case-roi",
+        "pitfall-relevance-vs-resonance",
+    ],
+    "exodus": [
+        "competency-cross-audience-communication",
+        "pitfall-relevance-vs-resonance",
+        "research-inner-net-zero",
+        "research-anti-sycophancy-evidence",
+    ],
+    "innovation": [
+        "competency-ai-adoption-discipline",
+        "research-inner-net-zero",
+        "research-timing-and-source",
+        "pitfall-unannounced-structure",
+    ],
+    "ai_adoption": [
+        "competency-ai-adoption-discipline",
+        "competency-formal-diagnostic-methods",
+        "research-inner-net-zero",
+        "pitfall-one-register-communication",
+    ],
+    "digital_maturity": [
+        "competency-formal-diagnostic-methods",
+        "competency-hypothesis-first-thinking",
+        "competency-business-case-roi",
+    ],
+    "cloud_migration": [
+        "competency-cross-audience-communication",
+        "pitfall-relevance-vs-resonance",
+        "pitfall-one-register-communication",
+    ],
+    "restructuring": [
+        "competency-cross-audience-communication",
+        "research-anti-sycophancy-evidence",
+        "research-timing-and-source",
+    ],
+}
+
+SCENARIO_FRAMEWORK = {
+    "deployment": "framework-diagnostic",
+    "revenue": "framework-diagnostic",
+    "exodus": "framework-diagnostic",
+    "innovation": "framework-adoption",
+    "ai_adoption": "framework-adoption",
+    "digital_maturity": "framework-diagnostic",
+    "cloud_migration": "framework-adoption",
+    "restructuring": "framework-adoption",
+}
 
 PROBLEM_TYPES = [
     "select",
