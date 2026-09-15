@@ -11,6 +11,7 @@ import re
 from datetime import datetime
 from coach import build_system_prompt, SCENARIOS, PROBLEM_TYPES, PROBLEM_TYPE_LABELS, SCENARIO_KB_IDS, SCENARIO_FRAMEWORK
 from kb_lookup import load_kb, get_by_ids, match_by_keywords
+from model_answer import MODEL_ANSWER_SYSTEM_PROMPT, build_model_answer_prompt
 
 UI_TEXT = {
     "en": {
@@ -514,3 +515,89 @@ if st.session_state.result:
             f'</div>',
             unsafe_allow_html=True
         )
+
+    # ── Reveal model answer ──────────────────────────────────────
+    st.markdown('<hr class="thin-divider">', unsafe_allow_html=True)
+    reveal = st.button(ui["reveal_button"])
+
+    if reveal:
+        if st.session_state.input_mode == "scenario":
+            model_kb_context = get_by_ids(SCENARIO_KB_IDS.get(scenario["id"], []), kb_entries)
+            model_framework_hint = {"framework-diagnostic": "diagnostic", "framework-adoption": "adoption"}.get(
+                SCENARIO_FRAMEWORK.get(scenario["id"])
+            )
+        else:
+            model_kb_context = match_by_keywords(situation_text, kb_entries, entry_types=["competency_pattern", "research_finding"], limit=3)
+            model_framework_hint = None
+
+        try:
+            api_key = st.secrets.get("ANTHROPIC_API_KEY", None) if hasattr(st, "secrets") else None
+            client = anthropic.Anthropic(api_key=api_key)
+
+            model_response = client.messages.create(
+                model="claude-sonnet-4-5",
+                max_tokens=2048,
+                system=MODEL_ANSWER_SYSTEM_PROMPT,
+                messages=[{
+                    "role": "user",
+                    "content": build_model_answer_prompt(situation_text, kb_context=model_kb_context, framework_hint=model_framework_hint),
+                }],
+            )
+            raw_model = model_response.content[0].text.strip()
+            match_json = re.search(r'\{.*\}', raw_model, re.DOTALL)
+            if match_json:
+                raw_model = match_json.group()
+            st.session_state.model_answer = json.loads(raw_model)
+        except (json.JSONDecodeError, Exception) as e:
+            st.error(f"{ui['generic_error']} {e}")
+
+    if st.session_state.model_answer:
+        ma = st.session_state.model_answer
+        st.markdown(f'<div class="section-label">{ui["model_answer_heading"]}</div>', unsafe_allow_html=True)
+
+        if ma["framework_used"] == "diagnostic":
+            st.markdown(f"**Klären:** {ma['klaeren']['restated_problem']}")
+            for assumption in ma["klaeren"]["clarifying_assumptions"]:
+                st.markdown(f"- {assumption}")
+
+            st.markdown(f"**Strukturieren:** {ma['strukturieren']['root_problem']}")
+            for branch in ma["strukturieren"]["branches"]:
+                st.markdown(f"- {branch['area']}")
+                for sub in branch["sub_issues"]:
+                    st.markdown(f"  - {sub}")
+
+            st.markdown("**Hypothese:**")
+            for h in ma["hypothese"]:
+                st.markdown(f"- {h['hypothesis']} _(evidence: {h['evidence']})_")
+
+            st.markdown("**Analysieren:**")
+            for q in ma["analysieren"]["diagnostic_questions"]:
+                st.markdown(f"- {q['question']} _(reveals: {q['what_it_reveals']})_")
+
+            st.markdown(f"**Synthetisieren:** {ma['synthetisieren']['recommendation']}")
+            ws = ma["synthetisieren"]["first_workshop"]
+            st.markdown(f"First workshop: {ws['format']} ({ws['duration']}) — {ws['key_output']}")
+        else:
+            ist = ma["ist_analyse"]
+            st.markdown("**Ist-Analyse:**")
+            for dim, val in ist.items():
+                st.markdown(f"- {dim}: {val}")
+
+            st.markdown(f"**Zielbild:** {ma['zielbild']}")
+
+            st.markdown("**Gap-Analyse:**")
+            for gap in ma["gap_analyse"]:
+                st.markdown(f"- {gap}")
+
+            st.markdown("**Operationalisieren:**")
+            for ws in ma["operationalisieren"]:
+                st.markdown(f"- {ws['workstream']}: {ws['description']}")
+
+            st.markdown("**Roadmap:**")
+            for phase in ma["roadmap"]:
+                st.markdown(f"- {phase['phase']} ({phase['duration']}): {phase['focus']}")
+
+        if ma.get("red_flags"):
+            st.markdown("**Red flags:**")
+            for flag in ma["red_flags"]:
+                st.markdown(f"- ⚠ {flag}")
