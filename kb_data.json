@@ -1,0 +1,419 @@
+[
+  {
+    "id": "competency-ai-adoption-discipline",
+    "title": "AI/change adoption as its own named discipline",
+    "type": "competency_pattern",
+    "tags": [
+      "competency",
+      "ai_adoption",
+      "change_management"
+    ],
+    "keywords": [
+      "adoption",
+      "enablement",
+      "rollout",
+      "usage",
+      "champion network",
+      "literacy"
+    ],
+    "source": "About a third of the reviewed job postings are literally titled around adoption/enablement",
+    "steps": [],
+    "body": "Driving actual usage of a new tool or process, running literacy/training programs, tracking adoption KPIs, and building \"champion\" networks inside the client org are treated as a distinct, hireable skill set — not a byproduct of good technology. A third of the real job posting set is built entirely around this."
+  },
+  {
+    "id": "competency-bridging-business-technical",
+    "title": "Bridging business and technical without being an engineer",
+    "type": "competency_pattern",
+    "tags": [
+      "competency",
+      "technical_fluency",
+      "hybrid"
+    ],
+    "keywords": [
+      "technical understanding",
+      "technisches verständnis",
+      "API",
+      "low-code",
+      "non-technical"
+    ],
+    "source": "Explicitly named in several AI-strategy job postings",
+    "steps": [],
+    "body": "Job postings explicitly want someone who can work with data, APIs, and low-code tools well enough to hold a real conversation with engineers — without requiring the candidate to actually code. The hybrid is the ask, not depth on either end alone."
+  },
+  {
+    "id": "competency-business-case-roi",
+    "title": "Business-case and ROI framing",
+    "type": "competency_pattern",
+    "tags": [
+      "competency",
+      "business_case",
+      "strategy"
+    ],
+    "keywords": [
+      "business case",
+      "ROI",
+      "prioritization",
+      "use case",
+      "value"
+    ],
+    "source": "Common in AI-strategy-flavored job postings",
+    "steps": [],
+    "body": "Being able to evaluate and rank competing ideas by expected value, not just technical feasibility — building and defending a business case, prioritizing use cases, framing recommendations in ROI terms a budget-holder can act on."
+  },
+  {
+    "id": "competency-cross-audience-communication",
+    "title": "Explaining complex things to different audiences",
+    "type": "competency_pattern",
+    "tags": [
+      "competency",
+      "communication",
+      "stakeholder"
+    ],
+    "keywords": [
+      "stakeholder",
+      "communication",
+      "audience",
+      "adressatengerecht",
+      "verständlich"
+    ],
+    "source": "Recurring across nearly all job postings",
+    "steps": [],
+    "body": "The same finding has to land differently with an engineer, a department head, and a board member — same content, different framing for each audience. Job postings describe this as translating technical or complex content so it's understandable to whoever's in the room, plus staying composed in client-facing moments under pressure."
+  },
+  {
+    "id": "competency-formal-diagnostic-methods",
+    "title": "Formal, named diagnostic methods",
+    "type": "competency_pattern",
+    "tags": [
+      "competency",
+      "diagnostic",
+      "change_management"
+    ],
+    "keywords": [
+      "change diagnostik",
+      "PROSCI",
+      "diagnostic tool",
+      "assessment method"
+    ],
+    "source": "Explicitly named in several job postings (e.g. PROSCI certification, 'Change Diagnostik')",
+    "steps": [],
+    "body": "Some job postings name a specific, recognized diagnostic instrument rather than just \"good judgment\" — some ask for PROSCI certification, others name \"Change Diagnostik\" directly. Having your own self-designed diagnostic/retrospective tool (not just using someone else's) is called out as a strong, differentiating signal."
+  },
+  {
+    "id": "competency-hypothesis-first-thinking",
+    "title": "Structured, hypothesis-first thinking",
+    "type": "competency_pattern",
+    "tags": [
+      "competency",
+      "analytical"
+    ],
+    "keywords": [
+      "structured",
+      "analytisch",
+      "hypothesis",
+      "hypothese",
+      "MECE",
+      "issue tree"
+    ],
+    "source": "Pattern across ~28 real junior-consultant job postings",
+    "steps": [],
+    "body": "Near-universal across junior consulting job postings, regardless of firm type: the ability to turn an ambiguous, messy question into a small number of clear, testable pieces — and to lead with a hypothesis rather than an open-ended question. German postings phrase this as \"komplexe Sachverhalte strukturiert aufbereiten.\" This is the single most commonly named competency in the entire JD set."
+  },
+  {
+    "id": "competency-language-tooling-baseline",
+    "title": "Language and Office-tool baseline",
+    "type": "competency_pattern",
+    "tags": [
+      "competency",
+      "baseline",
+      "tooling"
+    ],
+    "keywords": [
+      "German",
+      "English",
+      "Excel",
+      "PowerPoint",
+      "Office",
+      "Deutschkenntnisse"
+    ],
+    "source": "Table stakes across essentially every job posting reviewed",
+    "steps": [],
+    "body": "German (usually C1) plus English, and comfort with Excel/Word/PowerPoint, are assumed baseline requirements in almost every posting — not differentiators, but a hard floor. Worth knowing before assuming a coached answer is \"complete\" if it never touches these basics."
+  },
+  {
+    "id": "competency-team-fit-fast-learner",
+    "title": "Team fit and fast-learner framing",
+    "type": "competency_pattern",
+    "tags": [
+      "competency",
+      "culture_fit",
+      "learning"
+    ],
+    "keywords": [
+      "team player",
+      "lernkurve",
+      "curiosity",
+      "fast learner",
+      "collaborative"
+    ],
+    "source": "Near-universal across the job posting set",
+    "steps": [],
+    "body": "Nearly every posting pairs collaborative, low-hierarchy culture language with an explicit appetite for a steep learning curve (\"Lust auf Lernkurve,\" \"steile Lernkurve\"). This is table-stakes framing, but its constant presence means it's worth naming explicitly rather than assuming it's implied."
+  },
+  {
+    "id": "competency-work-package-ownership",
+    "title": "Ownership of a discrete work package",
+    "type": "competency_pattern",
+    "tags": [
+      "competency",
+      "ownership",
+      "delivery"
+    ],
+    "keywords": [
+      "ownership",
+      "eigenverantwortlich",
+      "verantwortung",
+      "arbeitspaket",
+      "own"
+    ],
+    "source": "Near-universal — the standard entry-level scope-of-trust marker",
+    "steps": [],
+    "body": "Job postings consistently frame the entry-level bar not as \"do what you're told\" but as \"own a defined slice end-to-end\" (\"Verantwortung für Teilbereiche,\" \"eigenverantwortlich\"). The signal employers are checking for is whether a candidate can name one concrete thing they owned, not just supported."
+  },
+  {
+    "id": "competency-workshop-facilitation",
+    "title": "Workshop and training facilitation",
+    "type": "competency_pattern",
+    "tags": [
+      "competency",
+      "facilitation",
+      "delivery"
+    ],
+    "keywords": [
+      "workshop",
+      "facilitation",
+      "moderation",
+      "training",
+      "konzipieren"
+    ],
+    "source": "Recurring in most consulting and nearly all AI-adoption/enablement job postings",
+    "steps": [],
+    "body": "Being able to design and actually run a workshop (\"Workshops konzipieren und durchführen\") — not just attend one. This shows up constantly in AI-adoption and change-management postings specifically, since rollout work is often delivered through live sessions with client teams, not just written recommendations."
+  },
+  {
+    "id": "framework-adoption",
+    "title": "Adoption/rollout method: Ist-Analyse to Roadmap",
+    "type": "framework",
+    "tags": [
+      "framework",
+      "adoption",
+      "rollout",
+      "change_management"
+    ],
+    "keywords": [
+      "rollout",
+      "adoption",
+      "not using it",
+      "usage low",
+      "change",
+      "implement",
+      "culture"
+    ],
+    "source": "Antony's own case-prep framework, refined after a real case interview",
+    "steps": [
+      "Ist-Analyse: map the current state across 8 dimensions (Prozesse, Daten, Systeme & Tools, Organisation, People/Literacy, Governance & Compliance, Strategie, Finanzen)",
+      "Zielbild: get explicit agreement from the sponsor on what success looks like",
+      "Gap-Analyse: the gap between Ist and Zielbild is the actual scope of work",
+      "Operationalisieren: turn the gap into concrete workstreams",
+      "Roadmap: sequence the workstreams into phases and deliver"
+    ],
+    "body": "Use this method when the question is \"how do we roll this out / why isn't adoption happening\" — forward-looking, not purely diagnostic. The 8-dimension Ist-Analyse grid is designed to work for any department — the same eight questions apply whether you're looking at engineering, sales, or HR. Skipping straight to a roadmap without an honest Ist-Analyse and an agreed Zielbild is the most common way this method goes wrong."
+  },
+  {
+    "id": "framework-diagnostic",
+    "title": "Diagnostic case method: Klären to Synthetisieren",
+    "type": "framework",
+    "tags": [
+      "framework",
+      "diagnostic"
+    ],
+    "keywords": [
+      "why",
+      "broken",
+      "wrong",
+      "root cause",
+      "diagnose",
+      "issue",
+      "problem"
+    ],
+    "source": "Antony's own case-prep framework",
+    "steps": [
+      "Klären: confirm what the client actually means before analysing anything",
+      "Strukturieren: break the problem into a MECE issue tree",
+      "Hypothese: commit to a leading hypothesis, don't just list open questions",
+      "Analysieren: test the hypothesis against the evidence in front of you",
+      "Synthetisieren: turn the analysis into a clear recommendation and next step"
+    ],
+    "body": "Use this method when the question is \"why is X wrong / what's actually going on\" — a diagnostic case, not a rollout. The five steps are meant to be named out loud, in order, not just implied by the content of your answer. Answers that have the right content but never announce the structure read as a list of themes instead of a method — see the \"unannounced structure\" pitfall."
+  },
+  {
+    "id": "pitfall-one-register-communication",
+    "title": "One register, regardless of audience",
+    "type": "junior_pitfall",
+    "tags": [
+      "pitfall",
+      "communication",
+      "stakeholder"
+    ],
+    "keywords": [
+      "jargon",
+      "technical language",
+      "same explanation",
+      "audience",
+      "generic"
+    ],
+    "source": "Direct inverse of the cross-audience-communication competency pattern",
+    "steps": [],
+    "body": "Explaining a finding to an engineer, a department head, and a board member in the exact same words is a common junior tell — it signals the content was understood, but not yet translated for who's actually receiving it. The fix isn't simplifying everything; it's re-framing the same finding around what each specific audience is actually accountable for."
+  },
+  {
+    "id": "pitfall-open-question-not-hypothesis",
+    "title": "Leading with an open question instead of a hypothesis",
+    "type": "junior_pitfall",
+    "tags": [
+      "pitfall",
+      "hypothesis",
+      "confidence"
+    ],
+    "keywords": [
+      "open question",
+      "vague",
+      "no hypothesis",
+      "unsure",
+      "non-committal"
+    ],
+    "source": "Direct inverse of the hypothesis-first competency pattern, common junior failure mode",
+    "steps": [],
+    "body": "Instead of committing to a testable hypothesis and stating the evidence for it, the answer defaults to a safe, open-ended question (\"it depends,\" \"we'd need to explore further\"). This reads as caution to the junior giving the answer, but reads as a lack of a point of view to the person evaluating it. A senior-sounding answer leads with a hypothesis and names what would change their mind."
+  },
+  {
+    "id": "pitfall-relevance-vs-resonance",
+    "title": "Relevant, but not resonant",
+    "type": "junior_pitfall",
+    "tags": [
+      "pitfall",
+      "communication",
+      "client_insight"
+    ],
+    "keywords": [
+      "relevance",
+      "resonance",
+      "surface",
+      "deeper",
+      "priorities"
+    ],
+    "source": "From Antony's research interview with Jazz Rasool (AI Coaching Alliance), generalized",
+    "steps": [],
+    "body": "An answer can sound relevant — it references the client's own words and stated interests — without actually resonating with what they need underneath. Relevance connects to surface interests and preferences; resonance connects to the deeper intention and priority behind them. Relevance gets you in the door; only resonance keeps you in the room. Junior consultants commonly stop at relevant when the client needed resonant."
+  },
+  {
+    "id": "pitfall-unannounced-structure",
+    "title": "Right content, structure never announced",
+    "type": "junior_pitfall",
+    "tags": [
+      "pitfall",
+      "structure",
+      "communication"
+    ],
+    "keywords": [
+      "structure",
+      "sequence",
+      "method",
+      "announce",
+      "list of themes"
+    ],
+    "source": "Real, sourced pitfall from a case interview (generalized, no personal identifying detail)",
+    "steps": [],
+    "body": "The content can be entirely correct — all the right themes mentioned — but if the method's steps are never named out loud, in order, the answer reads as a list of loosely related points instead of a structured method. The fix is simple and almost free: say the framework's step names explicitly before filling in the content under each one."
+  },
+  {
+    "id": "pitfall-vague-ownership",
+    "title": "Describing involvement instead of claiming ownership",
+    "type": "junior_pitfall",
+    "tags": [
+      "pitfall",
+      "ownership",
+      "delivery"
+    ],
+    "keywords": [
+      "supported",
+      "helped with",
+      "involved in",
+      "part of",
+      "contributed to"
+    ],
+    "source": "Direct inverse of the work-package-ownership competency pattern",
+    "steps": [],
+    "body": "Language like \"I was involved in,\" \"I helped with,\" or \"I supported\" describes proximity to work, not ownership of it. Job postings are explicitly listening for a candidate who can name one discrete piece they owned end-to-end — the deliverable, the decision, the outcome — not just the project they were near."
+  },
+  {
+    "id": "research-anti-sycophancy-evidence",
+    "title": "Why anti-sycophancy coaching isn't just a style choice",
+    "type": "research_finding",
+    "tags": [
+      "research",
+      "ai_behavior",
+      "coaching_design"
+    ],
+    "keywords": [
+      "sycophancy",
+      "agree",
+      "please",
+      "anxiety",
+      "harm"
+    ],
+    "source": "Antony's research interview with Jazz Rasool, generalized (no direct quotes from the recording)",
+    "steps": [],
+    "body": "AI systems that only support and never challenge — offloading accountability in the name of being \"non-judgmental\" — have been evaluated by researchers as showing patterns that would be called psychopathic or sociopathic in a person: always working to please, regardless of whether pleasing is actually helpful. Documented anxiety-like behavior patterns have even been observed in production AI models under certain conditions. This is real, if informal, backing for treating \"never be sycophantic\" as a designed safeguard, not just a tone preference."
+  },
+  {
+    "id": "research-inner-net-zero",
+    "title": "The 'inner net zero' of a change effort",
+    "type": "research_finding",
+    "tags": [
+      "research",
+      "ai_adoption",
+      "change_management"
+    ],
+    "keywords": [
+      "emotional toxicity",
+      "incoherence",
+      "motivation",
+      "attention",
+      "burnout"
+    ],
+    "source": "Antony's research interview with Jazz Rasool, generalized",
+    "steps": [],
+    "body": "Just as organizations track carbon footprint, teams have an equivalent to manage: emotional toxicity, misalignment between what people say and do, and confused or contradictory thinking erode a change effort from the inside. What a change effort needs to actively protect is motivation, clear intention, and sustained attention — these are the resources that quietly deplete when an AI-adoption or culture-change project stalls."
+  },
+  {
+    "id": "research-timing-and-source",
+    "title": "Support, challenge, and reflection need the right timing and source, not just the right amount",
+    "type": "research_finding",
+    "tags": [
+      "research",
+      "coaching_design",
+      "feedback"
+    ],
+    "keywords": [
+      "timing",
+      "source",
+      "when",
+      "who",
+      "proportion"
+    ],
+    "source": "Antony's research interview with Jazz Rasool, generalized",
+    "steps": [],
+    "body": "Getting the right proportion of support, challenge, and reflection isn't enough on its own — the same feedback given at the wrong moment, or from the wrong source, can do more harm than good. A challenge that's right in substance but arrives before someone's ready for it, or comes from someone they don't trust, tends to land as an attack rather than as coaching."
+  }
+]
