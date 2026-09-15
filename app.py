@@ -281,6 +281,79 @@ st.markdown("""
         text-align: right;
         margin-top: 0.5rem;
     }
+
+    /* Cards */
+    .card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .card-title {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #9ca3af;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Issue tree branch */
+    .branch-title {
+        font-weight: 600;
+        color: #374151;
+        font-size: 0.9rem;
+        margin-top: 0.6rem;
+    }
+    .branch-item {
+        color: #6b7280;
+        font-size: 0.85rem;
+        padding-left: 1rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Model answer */
+    .model-framework-badge {
+        display: inline-block;
+        border-radius: 8px;
+        padding: 0.3rem 0.85rem;
+        font-weight: 700;
+        font-size: 0.78rem;
+        margin-bottom: 1rem;
+        background: #ede9fe;
+        color: #5b21b6;
+    }
+    .model-step-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #9ca3af;
+        margin: 1rem 0 0.4rem 0;
+    }
+    .model-hyp-item, .model-q-item {
+        background: #f9fafb;
+        border-left: 3px solid #6366f1;
+        border-radius: 0 8px 8px 0;
+        padding: 0.7rem 0.95rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.88rem;
+    }
+    .model-hyp-evidence, .model-q-reveals {
+        color: #6b7280;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+    .model-flag-item {
+        background: #fff7ed;
+        border-left: 3px solid #f97316;
+        border-radius: 0 8px 8px 0;
+        padding: 0.6rem 0.9rem;
+        margin-bottom: 0.4rem;
+        color: #7c2d12;
+        font-size: 0.85rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -564,51 +637,85 @@ if st.session_state.result:
 
     if st.session_state.model_answer:
         ma = st.session_state.model_answer
-        st.markdown(f'<div class="section-label">{ui["model_answer_heading"]}</div>', unsafe_allow_html=True)
+        framework_label = "Diagnostic method" if ma["framework_used"] == "diagnostic" else "Adoption method"
+        st.markdown(f'<span class="model-framework-badge">{framework_label}</span>', unsafe_allow_html=True)
 
         if ma["framework_used"] == "diagnostic":
-            st.markdown(f"**Klären:** {ma['klaeren']['restated_problem']}")
+            st.markdown('<div class="model-step-label">Klären</div>', unsafe_allow_html=True)
+            st.markdown(ma["klaeren"]["restated_problem"])
             for assumption in ma["klaeren"]["clarifying_assumptions"]:
                 st.markdown(f"- {assumption}")
 
-            st.markdown(f"**Strukturieren:** {ma['strukturieren']['root_problem']}")
+            st.markdown('<div class="model-step-label">Strukturieren</div>', unsafe_allow_html=True)
+            st.markdown(f"Root: {ma['strukturieren']['root_problem']}")
             for branch in ma["strukturieren"]["branches"]:
-                st.markdown(f"- {branch['area']}")
+                st.markdown(f'<div class="branch-title">↳ {branch["area"]}</div>', unsafe_allow_html=True)
                 for sub in branch["sub_issues"]:
-                    st.markdown(f"  - {sub}")
+                    st.markdown(f'<div class="branch-item">· {sub}</div>', unsafe_allow_html=True)
 
-            st.markdown("**Hypothese:**")
+            st.markdown('<div class="model-step-label">Hypothese</div>', unsafe_allow_html=True)
             for h in ma["hypothese"]:
-                st.markdown(f"- {h['hypothesis']} _(evidence: {h['evidence']})_")
+                st.markdown(f"""
+                <div class="model-hyp-item">
+                    {h['hypothesis']}
+                    <div class="model-hyp-evidence">Evidence: {h['evidence']}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-            st.markdown("**Analysieren:**")
+            st.markdown('<div class="model-step-label">Analysieren</div>', unsafe_allow_html=True)
             for q in ma["analysieren"]["diagnostic_questions"]:
-                st.markdown(f"- {q['question']} _(reveals: {q['what_it_reveals']})_")
+                st.markdown(f"""
+                <div class="model-q-item">
+                    {q['question']}
+                    <div class="model-q-reveals">Reveals: {q['what_it_reveals']}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-            st.markdown(f"**Synthetisieren:** {ma['synthetisieren']['recommendation']}")
+            st.markdown('<div class="model-step-label">Synthetisieren</div>', unsafe_allow_html=True)
+            st.markdown(ma["synthetisieren"]["recommendation"])
             ws = ma["synthetisieren"]["first_workshop"]
-            st.markdown(f"First workshop: {ws['format']} ({ws['duration']}) — {ws['key_output']}")
+            st.markdown(f"""
+            <div class="card">
+                <div class="card-title">Suggested first workshop</div>
+                <div style="font-weight:600;color:#111827;">{ws['format']}</div>
+                <div style="font-size:0.82rem;color:#6b7280;margin-bottom:0.6rem;">{ws['duration']}</div>
+                {''.join(f'<div class="branch-item">· {item}</div>' for item in ws['agenda'])}
+                <div style="margin-top:0.6rem;font-size:0.85rem;background:#f0fdf4;border-radius:6px;padding:0.5rem 0.75rem;color:#166534;">
+                    <strong>Output:</strong> {ws['key_output']}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
         else:
-            ist = ma["ist_analyse"]
-            st.markdown("**Ist-Analyse:**")
-            for dim, val in ist.items():
-                st.markdown(f"- {dim}: {val}")
+            st.markdown('<div class="model-step-label">Ist-Analyse</div>', unsafe_allow_html=True)
+            for dim, val in ma["ist_analyse"].items():
+                st.markdown(f'<div class="branch-item">· <strong>{dim.replace("_", " ").title()}:</strong> {val}</div>', unsafe_allow_html=True)
 
-            st.markdown(f"**Zielbild:** {ma['zielbild']}")
+            st.markdown('<div class="model-step-label">Zielbild</div>', unsafe_allow_html=True)
+            st.markdown(ma["zielbild"])
 
-            st.markdown("**Gap-Analyse:**")
+            st.markdown('<div class="model-step-label">Gap-Analyse</div>', unsafe_allow_html=True)
             for gap in ma["gap_analyse"]:
-                st.markdown(f"- {gap}")
+                st.markdown(f'<div class="branch-item">· {gap}</div>', unsafe_allow_html=True)
 
-            st.markdown("**Operationalisieren:**")
+            st.markdown('<div class="model-step-label">Operationalisieren</div>', unsafe_allow_html=True)
             for ws in ma["operationalisieren"]:
-                st.markdown(f"- {ws['workstream']}: {ws['description']}")
+                st.markdown(f"""
+                <div class="model-hyp-item">
+                    <strong>{ws['workstream']}</strong>
+                    <div class="model-hyp-evidence">{ws['description']}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-            st.markdown("**Roadmap:**")
+            st.markdown('<div class="model-step-label">Roadmap</div>', unsafe_allow_html=True)
             for phase in ma["roadmap"]:
-                st.markdown(f"- {phase['phase']} ({phase['duration']}): {phase['focus']}")
+                st.markdown(f"""
+                <div class="model-hyp-item">
+                    <strong>{phase['phase']}</strong> ({phase['duration']})
+                    <div class="model-hyp-evidence">{phase['focus']}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
         if ma.get("red_flags"):
-            st.markdown("**Red flags:**")
+            st.markdown('<div class="model-step-label">Red flags</div>', unsafe_allow_html=True)
             for flag in ma["red_flags"]:
-                st.markdown(f"- ⚠ {flag}")
+                st.markdown(f'<div class="model-flag-item">⚠ {flag}</div>', unsafe_allow_html=True)
