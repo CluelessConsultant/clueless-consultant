@@ -175,6 +175,17 @@ st.markdown("""
         margin-top: 1.25rem;
     }
 
+    /* Section labels (e.g. model answer heading) */
+    .section-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #6b7280;
+        margin-bottom: 0.75rem;
+        margin-top: 1.25rem;
+    }
+
     /* Coaching vitamins */
     .vitamin-challenge {
         background: #fff7ed;
@@ -548,7 +559,7 @@ if st.session_state.result:
             if match_json:
                 raw_model = match_json.group()
             st.session_state.model_answer = json.loads(raw_model)
-        except (json.JSONDecodeError, Exception) as e:
+        except Exception as e:
             st.error(f"{ui['generic_error']} {e}")
 
     if st.session_state.model_answer:
