@@ -9,7 +9,8 @@ import anthropic
 import json
 import re
 from datetime import datetime
-from coach import build_system_prompt, SCENARIOS, PROBLEM_TYPES, PROBLEM_TYPE_LABELS
+from coach import build_system_prompt, SCENARIOS, PROBLEM_TYPES, PROBLEM_TYPE_LABELS, SCENARIO_KB_IDS, SCENARIO_FRAMEWORK
+from kb_lookup import load_kb, get_by_ids, match_by_keywords
 
 UI_TEXT = {
     "en": {
@@ -17,6 +18,13 @@ UI_TEXT = {
         "hero_title": "Clueless Consultant",
         "hero_subtitle": "You do the thinking. Claude tells you where you went wrong.",
         "scenario_label": "Client situation",
+        "mode_label": "How do you want to practice?",
+        "mode_scenario": "Pick a scenario",
+        "mode_custom": "Paste your own problem",
+        "custom_label": "Client problem statement",
+        "custom_placeholder": "Type or paste what the client says. Messy, emotional, incomplete is fine.",
+        "reveal_button": "Reveal model answer",
+        "model_answer_heading": "Model answer",
         "classification_label": "Your problem classification",
         "hypothesis_label": "Your leading hypothesis -- what do you think is actually going on?",
         "hypothesis_placeholder": "State your hypothesis in 1-2 sentences. Be specific about cause, not symptom.",
@@ -46,6 +54,13 @@ UI_TEXT = {
         "hero_title": "Clueless Consultant",
         "hero_subtitle": "Du denkst. Claude sagt dir, wo du falsch liegst.",
         "scenario_label": "Kundensituation",
+        "mode_label": "Wie möchtest du üben?",
+        "mode_scenario": "Szenario wählen",
+        "mode_custom": "Eigenes Problem einfügen",
+        "custom_label": "Kundenproblem",
+        "custom_placeholder": "Formuliere oder füge ein, was der Kunde sagt. Chaotisch, emotional, unvollständig ist okay.",
+        "reveal_button": "Musterlösung anzeigen",
+        "model_answer_heading": "Musterlösung",
         "classification_label": "Deine Problemklassifikation",
         "hypothesis_label": "Deine Leithypothese -- was, glaubst du, steckt wirklich dahinter?",
         "hypothesis_placeholder": "Formuliere deine Hypothese in 1-2 Sätzen. Konkret zur Ursache, nicht zum Symptom.",
@@ -262,6 +277,12 @@ if "final_message" not in st.session_state:
     st.session_state.final_message = None
 if "language" not in st.session_state:
     st.session_state.language = "en"
+if "input_mode" not in st.session_state:
+    st.session_state.input_mode = "scenario"
+if "model_answer" not in st.session_state:
+    st.session_state.model_answer = None
+
+kb_entries = load_kb()
 
 # ── Language toggle ──────────────────────────────────────────
 st.radio(
@@ -286,15 +307,38 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Scenario ──────────────────────────────────────────────────
-scenario = SCENARIOS[st.session_state.scenario_index]
+# ── Input mode toggle ────────────────────────────────────────
+st.markdown(f'<div class="input-label">{ui["mode_label"]}</div>', unsafe_allow_html=True)
+st.radio(
+    "input_mode",
+    options=["scenario", "custom"],
+    format_func=lambda m: ui["mode_scenario"] if m == "scenario" else ui["mode_custom"],
+    horizontal=True,
+    key="input_mode",
+    label_visibility="collapsed",
+)
 
-st.markdown(f"""
-<div class="scenario-card">
-    <div class="scenario-label">{ui['scenario_label']} &nbsp;|&nbsp; {scenario['context'][lang]}</div>
-    <div class="scenario-text">{scenario['text'][lang]}</div>
-</div>
-""", unsafe_allow_html=True)
+# ── Scenario or custom problem ───────────────────────────────
+scenario = None
+custom_problem = ""
+
+if st.session_state.input_mode == "scenario":
+    scenario = SCENARIOS[st.session_state.scenario_index]
+    st.markdown(f"""
+    <div class="scenario-card">
+        <div class="scenario-label">{ui['scenario_label']} &nbsp;|&nbsp; {scenario['context'][lang]}</div>
+        <div class="scenario-text">{scenario['text'][lang]}</div>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown(f'<div class="input-label">{ui["custom_label"]}</div>', unsafe_allow_html=True)
+    custom_problem = st.text_area(
+        "custom_problem",
+        placeholder=ui["custom_placeholder"],
+        height=110,
+        label_visibility="collapsed",
+        key="custom_problem",
+    )
 
 # ── Inputs ────────────────────────────────────────────────────
 st.markdown(f'<div class="input-label">{ui["classification_label"]}</div>', unsafe_allow_html=True)
@@ -324,7 +368,10 @@ first_question = st.text_area(
 # ── Buttons ───────────────────────────────────────────────────
 col_submit, col_next, _ = st.columns([1.2, 1.2, 2])
 
+situation_text = scenario["text"][lang] if st.session_state.input_mode == "scenario" else custom_problem.strip()
+
 valid = (
+    bool(situation_text) and
     classification != "select" and
     bool(hypothesis.strip()) and
     bool(first_question.strip())
@@ -336,13 +383,22 @@ def next_scenario():
     st.session_state.scenario_index = (st.session_state.scenario_index + 1) % len(SCENARIOS)
     st.session_state.result = None
     st.session_state.final_message = None
+    st.session_state.model_answer = None
 
-col_next.button(ui["next_button"], on_click=next_scenario)
+if st.session_state.input_mode == "scenario":
+    col_next.button(ui["next_button"], on_click=next_scenario)
 
 # ── Coaching ──────────────────────────────────────────────────
 if submit and valid:
+    st.session_state.model_answer = None
+
+    if st.session_state.input_mode == "scenario":
+        kb_context = get_by_ids(SCENARIO_KB_IDS.get(scenario["id"], []), kb_entries)
+    else:
+        kb_context = match_by_keywords(situation_text, kb_entries, entry_types=["competency_pattern", "research_finding", "junior_pitfall"], limit=3)
+
     user_response = (
-        f"Scenario: {scenario['text'][lang]}\n\n"
+        f"Scenario: {situation_text}\n\n"
         f"The junior consultant responded:\n"
         f"- Problem classification: {PROBLEM_TYPE_LABELS['en'][classification]}\n"
         f"- Leading hypothesis: {hypothesis.strip()}\n"
@@ -359,7 +415,7 @@ if submit and valid:
         with client.messages.stream(
             model="claude-sonnet-4-5",
             max_tokens=1024,
-            system=build_system_prompt(lang),
+            system=build_system_prompt(lang, kb_context=kb_context),
             messages=[{"role": "user", "content": user_response}]
         ) as stream:
             for chunk in stream.text_stream:
