@@ -28,6 +28,12 @@ def test_load_kb_valid_file(tmp_path):
     assert load_kb(good) == SAMPLE_KB
 
 
+def test_load_kb_wrong_shape_returns_empty(tmp_path):
+    wrong_shape = tmp_path / "wrong_shape.json"
+    wrong_shape.write_text(json.dumps({"entries": []}), encoding="utf-8")
+    assert load_kb(wrong_shape) == []
+
+
 def test_load_kb_real_file_in_repo():
     entries = load_kb()
     assert len(entries) == 20

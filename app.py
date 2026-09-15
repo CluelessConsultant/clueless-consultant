@@ -25,7 +25,6 @@ UI_TEXT = {
         "custom_label": "Client problem statement",
         "custom_placeholder": "Type or paste what the client says. Messy, emotional, incomplete is fine.",
         "reveal_button": "Reveal model answer",
-        "model_answer_heading": "Model answer",
         "classification_label": "Your problem classification",
         "hypothesis_label": "Your leading hypothesis -- what do you think is actually going on?",
         "hypothesis_placeholder": "State your hypothesis in 1-2 sentences. Be specific about cause, not symptom.",
@@ -63,7 +62,6 @@ UI_TEXT = {
         "custom_label": "Kundenproblem",
         "custom_placeholder": "Formuliere oder füge ein, was der Kunde sagt. Chaotisch, emotional, unvollständig ist okay.",
         "reveal_button": "Musterlösung anzeigen",
-        "model_answer_heading": "Musterlösung",
         "classification_label": "Deine Problemklassifikation",
         "hypothesis_label": "Deine Leithypothese -- was, glaubst du, steckt wirklich dahinter?",
         "hypothesis_placeholder": "Formuliere deine Hypothese in 1-2 Sätzen. Konkret zur Ursache, nicht zum Symptom.",
@@ -172,17 +170,6 @@ st.markdown("""
         letter-spacing: 0.08em;
         color: #6b7280;
         margin-bottom: 0.35rem;
-        margin-top: 1.25rem;
-    }
-
-    /* Section labels (e.g. model answer heading) */
-    .section-label {
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #6b7280;
-        margin-bottom: 0.75rem;
         margin-top: 1.25rem;
     }
 
@@ -373,6 +360,11 @@ if "model_answer" not in st.session_state:
 
 kb_entries = load_kb()
 
+def reset_coaching_state():
+    st.session_state.result = None
+    st.session_state.final_message = None
+    st.session_state.model_answer = None
+
 # ── Language toggle ──────────────────────────────────────────
 st.radio(
     "Language",
@@ -381,6 +373,7 @@ st.radio(
     horizontal=True,
     key="language",
     label_visibility="collapsed",
+    on_change=reset_coaching_state,
 )
 lang = st.session_state.language
 ui = UI_TEXT[lang]
@@ -405,6 +398,7 @@ st.radio(
     horizontal=True,
     key="input_mode",
     label_visibility="collapsed",
+    on_change=reset_coaching_state,
 )
 
 # ── Scenario or custom problem ───────────────────────────────
@@ -479,9 +473,7 @@ submit = col_submit.button(ui["submit_button"], type="primary", disabled=not val
 
 def next_scenario():
     st.session_state.scenario_index = (st.session_state.scenario_index + 1) % len(SCENARIOS)
-    st.session_state.result = None
-    st.session_state.final_message = None
-    st.session_state.model_answer = None
+    reset_coaching_state()
 
 if st.session_state.input_mode == "scenario":
     col_next.button(ui["next_button"], on_click=next_scenario)
@@ -637,85 +629,89 @@ if st.session_state.result:
 
     if st.session_state.model_answer:
         ma = st.session_state.model_answer
-        framework_label = "Diagnostic method" if ma["framework_used"] == "diagnostic" else "Adoption method"
-        st.markdown(f'<span class="model-framework-badge">{framework_label}</span>', unsafe_allow_html=True)
+        try:
+            framework_label = "Diagnostic method" if ma["framework_used"] == "diagnostic" else "Adoption method"
+            st.markdown(f'<span class="model-framework-badge">{framework_label}</span>', unsafe_allow_html=True)
 
-        if ma["framework_used"] == "diagnostic":
-            st.markdown('<div class="model-step-label">Klären</div>', unsafe_allow_html=True)
-            st.markdown(ma["klaeren"]["restated_problem"])
-            for assumption in ma["klaeren"]["clarifying_assumptions"]:
-                st.markdown(f"- {assumption}")
+            if ma["framework_used"] == "diagnostic":
+                st.markdown('<div class="model-step-label">Klären</div>', unsafe_allow_html=True)
+                st.markdown(ma["klaeren"]["restated_problem"])
+                for assumption in ma["klaeren"]["clarifying_assumptions"]:
+                    st.markdown(f"- {assumption}")
 
-            st.markdown('<div class="model-step-label">Strukturieren</div>', unsafe_allow_html=True)
-            st.markdown(f"Root: {ma['strukturieren']['root_problem']}")
-            for branch in ma["strukturieren"]["branches"]:
-                st.markdown(f'<div class="branch-title">↳ {branch["area"]}</div>', unsafe_allow_html=True)
-                for sub in branch["sub_issues"]:
-                    st.markdown(f'<div class="branch-item">· {sub}</div>', unsafe_allow_html=True)
+                st.markdown('<div class="model-step-label">Strukturieren</div>', unsafe_allow_html=True)
+                st.markdown(f"Root: {ma['strukturieren']['root_problem']}")
+                for branch in ma["strukturieren"]["branches"]:
+                    st.markdown(f'<div class="branch-title">↳ {branch["area"]}</div>', unsafe_allow_html=True)
+                    for sub in branch["sub_issues"]:
+                        st.markdown(f'<div class="branch-item">· {sub}</div>', unsafe_allow_html=True)
 
-            st.markdown('<div class="model-step-label">Hypothese</div>', unsafe_allow_html=True)
-            for h in ma["hypothese"]:
+                st.markdown('<div class="model-step-label">Hypothese</div>', unsafe_allow_html=True)
+                for h in ma["hypothese"]:
+                    st.markdown(f"""
+                    <div class="model-hyp-item">
+                        {h['hypothesis']}
+                        <div class="model-hyp-evidence">Evidence: {h['evidence']}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                st.markdown('<div class="model-step-label">Analysieren</div>', unsafe_allow_html=True)
+                for q in ma["analysieren"]["diagnostic_questions"]:
+                    st.markdown(f"""
+                    <div class="model-q-item">
+                        {q['question']}
+                        <div class="model-q-reveals">Reveals: {q['what_it_reveals']}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                st.markdown('<div class="model-step-label">Synthetisieren</div>', unsafe_allow_html=True)
+                st.markdown(ma["synthetisieren"]["recommendation"])
+                ws = ma["synthetisieren"]["first_workshop"]
                 st.markdown(f"""
-                <div class="model-hyp-item">
-                    {h['hypothesis']}
-                    <div class="model-hyp-evidence">Evidence: {h['evidence']}</div>
+                <div class="card">
+                    <div class="card-title">Suggested first workshop</div>
+                    <div style="font-weight:600;color:#111827;">{ws['format']}</div>
+                    <div style="font-size:0.82rem;color:#6b7280;margin-bottom:0.6rem;">{ws['duration']}</div>
+                    {''.join(f'<div class="branch-item">· {item}</div>' for item in ws['agenda'])}
+                    <div style="margin-top:0.6rem;font-size:0.85rem;background:#f0fdf4;border-radius:6px;padding:0.5rem 0.75rem;color:#166534;">
+                        <strong>Output:</strong> {ws['key_output']}
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="model-step-label">Ist-Analyse</div>', unsafe_allow_html=True)
+                for dim, val in ma["ist_analyse"].items():
+                    st.markdown(f'<div class="branch-item">· <strong>{dim.replace("_", " ").title()}:</strong> {val}</div>', unsafe_allow_html=True)
 
-            st.markdown('<div class="model-step-label">Analysieren</div>', unsafe_allow_html=True)
-            for q in ma["analysieren"]["diagnostic_questions"]:
-                st.markdown(f"""
-                <div class="model-q-item">
-                    {q['question']}
-                    <div class="model-q-reveals">Reveals: {q['what_it_reveals']}</div>
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown('<div class="model-step-label">Zielbild</div>', unsafe_allow_html=True)
+                st.markdown(ma["zielbild"])
 
-            st.markdown('<div class="model-step-label">Synthetisieren</div>', unsafe_allow_html=True)
-            st.markdown(ma["synthetisieren"]["recommendation"])
-            ws = ma["synthetisieren"]["first_workshop"]
-            st.markdown(f"""
-            <div class="card">
-                <div class="card-title">Suggested first workshop</div>
-                <div style="font-weight:600;color:#111827;">{ws['format']}</div>
-                <div style="font-size:0.82rem;color:#6b7280;margin-bottom:0.6rem;">{ws['duration']}</div>
-                {''.join(f'<div class="branch-item">· {item}</div>' for item in ws['agenda'])}
-                <div style="margin-top:0.6rem;font-size:0.85rem;background:#f0fdf4;border-radius:6px;padding:0.5rem 0.75rem;color:#166534;">
-                    <strong>Output:</strong> {ws['key_output']}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown('<div class="model-step-label">Ist-Analyse</div>', unsafe_allow_html=True)
-            for dim, val in ma["ist_analyse"].items():
-                st.markdown(f'<div class="branch-item">· <strong>{dim.replace("_", " ").title()}:</strong> {val}</div>', unsafe_allow_html=True)
+                st.markdown('<div class="model-step-label">Gap-Analyse</div>', unsafe_allow_html=True)
+                for gap in ma["gap_analyse"]:
+                    st.markdown(f'<div class="branch-item">· {gap}</div>', unsafe_allow_html=True)
 
-            st.markdown('<div class="model-step-label">Zielbild</div>', unsafe_allow_html=True)
-            st.markdown(ma["zielbild"])
+                st.markdown('<div class="model-step-label">Operationalisieren</div>', unsafe_allow_html=True)
+                for ws in ma["operationalisieren"]:
+                    st.markdown(f"""
+                    <div class="model-hyp-item">
+                        <strong>{ws['workstream']}</strong>
+                        <div class="model-hyp-evidence">{ws['description']}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
-            st.markdown('<div class="model-step-label">Gap-Analyse</div>', unsafe_allow_html=True)
-            for gap in ma["gap_analyse"]:
-                st.markdown(f'<div class="branch-item">· {gap}</div>', unsafe_allow_html=True)
+                st.markdown('<div class="model-step-label">Roadmap</div>', unsafe_allow_html=True)
+                for phase in ma["roadmap"]:
+                    st.markdown(f"""
+                    <div class="model-hyp-item">
+                        <strong>{phase['phase']}</strong> ({phase['duration']})
+                        <div class="model-hyp-evidence">{phase['focus']}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
-            st.markdown('<div class="model-step-label">Operationalisieren</div>', unsafe_allow_html=True)
-            for ws in ma["operationalisieren"]:
-                st.markdown(f"""
-                <div class="model-hyp-item">
-                    <strong>{ws['workstream']}</strong>
-                    <div class="model-hyp-evidence">{ws['description']}</div>
-                </div>
-                """, unsafe_allow_html=True)
-
-            st.markdown('<div class="model-step-label">Roadmap</div>', unsafe_allow_html=True)
-            for phase in ma["roadmap"]:
-                st.markdown(f"""
-                <div class="model-hyp-item">
-                    <strong>{phase['phase']}</strong> ({phase['duration']})
-                    <div class="model-hyp-evidence">{phase['focus']}</div>
-                </div>
-                """, unsafe_allow_html=True)
-
-        if ma.get("red_flags"):
-            st.markdown('<div class="model-step-label">Red flags</div>', unsafe_allow_html=True)
-            for flag in ma["red_flags"]:
-                st.markdown(f'<div class="model-flag-item">⚠ {flag}</div>', unsafe_allow_html=True)
+            if ma.get("red_flags"):
+                st.markdown('<div class="model-step-label">Red flags</div>', unsafe_allow_html=True)
+                for flag in ma["red_flags"]:
+                    st.markdown(f'<div class="model-flag-item">⚠ {flag}</div>', unsafe_allow_html=True)
+        except (KeyError, TypeError):
+            st.error(ui["json_error"])
+            st.session_state.model_answer = None

@@ -12,8 +12,9 @@ def load_kb(path: Path = None) -> list:
     path = path or DEFAULT_PATH
     try:
         with open(path, encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except (OSError, json.JSONDecodeError):
         return []
 
 

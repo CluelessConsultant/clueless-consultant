@@ -3,6 +3,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from coach import build_system_prompt, SCENARIOS, SCENARIO_KB_IDS, SCENARIO_FRAMEWORK
+from kb_lookup import load_kb
 
 
 def test_build_system_prompt_without_kb_context_omits_context_block():
@@ -37,3 +38,11 @@ def test_new_coaching_lenses_present_in_base_prompt():
     prompt = build_system_prompt("en")
     assert "resonance" in prompt.lower()
     assert "structure" in prompt.lower()
+
+
+def test_all_scenario_kb_ids_resolve_in_kb_data():
+    kb_entries = load_kb()
+    real_ids = {entry["id"] for entry in kb_entries}
+    referenced_ids = {eid for ids in SCENARIO_KB_IDS.values() for eid in ids}
+    missing = referenced_ids - real_ids
+    assert not missing, f"SCENARIO_KB_IDS references unknown KB ids: {missing}"
