@@ -30,6 +30,8 @@ UI_TEXT = {
         "hypothesis_placeholder": "State your hypothesis in 1-2 sentences. Be specific about cause, not symptom.",
         "question_label": "Your first diagnostic question -- what would you ask the client right now?",
         "question_placeholder": "The single most important question you would ask before anything else.",
+        "recommendation_label": "Your recommendation -- if your hypothesis holds, what would you actually tell the client to do?",
+        "recommendation_placeholder": "State your recommendation in 1-2 sentences. Short-term vs. medium-term if it matters. Commit to a position.",
         "submit_button": "Get coached",
         "next_button": "New scenario",
         "framework_note": (
@@ -66,6 +68,8 @@ UI_TEXT = {
         "hypothesis_placeholder": "Formuliere deine Hypothese in 1-2 Sätzen. Konkret zur Ursache, nicht zum Symptom.",
         "question_label": "Deine erste diagnostische Frage -- was würdest du den Kunden jetzt sofort fragen?",
         "question_placeholder": "Die eine wichtigste Frage, die du vor allem anderen stellen würdest.",
+        "recommendation_label": "Deine Empfehlung -- wenn deine Hypothese stimmt, was würdest du dem Kunden konkret raten?",
+        "recommendation_placeholder": "Formuliere deine Empfehlung in 1-2 Sätzen. Kurzfristig vs. mittelfristig, wenn relevant. Beziehe klar Stellung.",
         "submit_button": "Coaching erhalten",
         "next_button": "Neues Szenario",
         "framework_note": (
@@ -365,6 +369,14 @@ first_question = st.text_area(
     label_visibility="collapsed"
 )
 
+st.markdown(f'<div class="input-label">{ui["recommendation_label"]}</div>', unsafe_allow_html=True)
+recommendation = st.text_area(
+    "recommendation",
+    placeholder=ui["recommendation_placeholder"],
+    height=75,
+    label_visibility="collapsed"
+)
+
 # ── Buttons ───────────────────────────────────────────────────
 col_submit, col_next, _ = st.columns([1.2, 1.2, 2])
 
@@ -374,7 +386,8 @@ valid = (
     bool(situation_text) and
     classification != "select" and
     bool(hypothesis.strip()) and
-    bool(first_question.strip())
+    bool(first_question.strip()) and
+    bool(recommendation.strip())
 )
 
 submit = col_submit.button(ui["submit_button"], type="primary", disabled=not valid)
@@ -402,7 +415,8 @@ if submit and valid:
         f"The junior consultant responded:\n"
         f"- Problem classification: {PROBLEM_TYPE_LABELS['en'][classification]}\n"
         f"- Leading hypothesis: {hypothesis.strip()}\n"
-        f"- First diagnostic question: {first_question.strip()}"
+        f"- First diagnostic question: {first_question.strip()}\n"
+        f"- Recommendation: {recommendation.strip()}"
     )
 
     try:

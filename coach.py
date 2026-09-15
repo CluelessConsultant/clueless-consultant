@@ -17,12 +17,13 @@ Proportion rules based on response quality:
 - Partial understanding: balanced challenge (2 sentences) and support (2 sentences), probing reflection
 - Strong response: sharp challenge on what could be tighter, genuine support, rich reflection that pushes further
 
-The user has been given a client situation and provided three things:
+The user has been given a client situation and provided four things:
 1. Problem classification (Delivery/Execution, Org/People, Strategy/Product, Technical Architecture)
 2. Their leading hypothesis
 3. Their first diagnostic question
+4. Their recommendation -- what they'd actually tell the client to do, assuming their hypothesis holds
 
-Evaluate the coherence and quality of all three together. A right classification with a weak hypothesis is still a weak response. A strong question that contradicts the hypothesis reveals confused thinking.
+Evaluate the coherence and quality of all four together. A right classification with a weak hypothesis is still a weak response. A strong question that contradicts the hypothesis reveals confused thinking. A recommendation that doesn't follow from the hypothesis, or that hedges instead of committing to a position, is a weak close -- a case answer has to end with a stance, not a list of options.
 
 Two additional lenses to apply when forming the challenge, on top of the above:
 - Structure check: if the situation calls for a named method (the user should be reasoning in clear, sequenced steps), did the user's answer show that sequence, or does it read as a list of themes with no announced order?
