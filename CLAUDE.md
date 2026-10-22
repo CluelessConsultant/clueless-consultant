@@ -1,7 +1,7 @@
 # Clueless Consultant Coach — Project Context
 
 **Live:** https://clueless-consultant.streamlit.app/
-**Repo:** https://github.com/CluefullConsultant/clueless-consultant
+**Repo:** https://github.com/CluelessConsultant/clueless-consultant
 
 ## What it does
 
@@ -38,4 +38,4 @@ Practice loop for junior (AI) consulting skills. Pick one of 8 realistic client 
 
 ## Shared context
 
-For style rules, who Antony is, and the Haik Spitzer meeting context, see `../CLAUDE.md`.
+For style rules and who Antony is, see `../CLAUDE.md`.
